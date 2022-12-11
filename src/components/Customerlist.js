@@ -8,6 +8,7 @@ import EditCustomer from './EditCustomer';
 import Snackbar from '@mui/material/Snackbar';
 import { IconButton } from '@mui/material';
 import { DeleteSharp } from '@mui/icons-material';
+import ExportCSV from './ExportCSV';
 
 export default function Customerlist() {
 
@@ -161,6 +162,7 @@ export default function Customerlist() {
     return (
         <div>
             <AddCustomer addCustomer={addCustomer} />
+            <ExportCSV customers={customers} />
             <div
                 className='ag-theme-material'
                 style={{
