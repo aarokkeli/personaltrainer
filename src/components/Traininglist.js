@@ -4,7 +4,7 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
 import moment from 'moment';
 import 'moment-timezone';
-import { IconButton, Snackbar } from '@mui/material';
+import { IconButton, Snackbar, Tooltip } from '@mui/material';
 import { DeleteSharp } from '@mui/icons-material';
 
 export default function Traininglist() {
@@ -58,7 +58,10 @@ export default function Traininglist() {
             headerName: '',
             field: 'id',
             width: '70',
-            cellRenderer: params => <IconButton onClick={() => deleteTraining(params.value)}><DeleteSharp /></IconButton>
+            cellRenderer: params =>
+                <Tooltip disableFocusListener title='Delete training'>
+                    <IconButton onClick={() => deleteTraining(params.value)}><DeleteSharp /></IconButton>
+                </Tooltip>
         },
         {
             headerName: 'Date',

@@ -21,7 +21,7 @@ export default function ExportCSV(props) {
                 className='btn btn_primary'
                 target='_blank'
             >
-                Download CSV file
+                Download .CSV file
             </CSVLink>
         </div>
     )

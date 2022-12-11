@@ -6,7 +6,7 @@ import AddCustomer from './AddCustomer';
 import AddTraining from './AddTraining';
 import EditCustomer from './EditCustomer';
 import Snackbar from '@mui/material/Snackbar';
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { DeleteSharp } from '@mui/icons-material';
 import ExportCSV from './ExportCSV';
 
@@ -94,20 +94,25 @@ export default function Customerlist() {
             headerName: '',
             width: '70',
             valueGetter: (params) => params.data.links[0].href,
-            cellRenderer: params => <EditCustomer customer={params.data} url={params.value} editCustomer={editCustomer} />
+            cellRenderer: params =>
+                <EditCustomer customer={params.data} url={params.value} editCustomer={editCustomer} />
         },
         {
             headerName: '',
             field: 'link',
             width: '70',
             valueGetter: (params) => params.data.links[0].href,
-            cellRenderer: params => <IconButton size='small' onClick={() => deleteCustomer(params.value)}><DeleteSharp /></IconButton>
+            cellRenderer: params =>
+                <Tooltip disableFocusListener title='Delete customer'>
+                    <IconButton size='small' onClick={() => deleteCustomer(params.value)}><DeleteSharp /></IconButton>
+                </Tooltip>
         },
         {
             headerName: '',
             width: '70',
             valueGetter: (params) => params.data.links[0].href,
-            cellRenderer: params => <AddTraining addTraining={addTraining} url={params.value} customer={params.data} />
+            cellRenderer: params =>
+                <AddTraining addTraining={addTraining} url={params.value} customer={params.data} />
         },
         {
             headerName: 'First name',
