@@ -2,13 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
-import { CenterFocusStrong } from '@mui/icons-material';
+import AddCustomer from './AddCustomer';
+import AddTraining from './AddTraining';
+import EditCustomer from './EditCustomer';
+import Snackbar from '@mui/material/Snackbar';
+import { IconButton } from '@mui/material';
+import { DeleteSharp } from '@mui/icons-material';
 
 export default function Customerlist() {
 
     const [customers, setCustomers] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState('');
 
     useEffect(() => fetchCustomers(), []);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    }
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    }
 
     const fetchCustomers = () => {
         fetch('https://customerrest.herokuapp.com/api/customers')
@@ -17,11 +35,79 @@ export default function Customerlist() {
             .catch(err => console.error(err))
     }
 
+    const addCustomer = (customer) => {
+        fetch('https://customerrest.herokuapp.com/api/customers', {
+            method: 'POST',
+            body: JSON.stringify(customer),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => fetchCustomers())
+            .catch(err => console.error(err))
+    }
+
+    const deleteCustomer = (link) => {
+        if (window.confirm('Are you sure you want to delete this customer?')) {
+            fetch(link, { method: 'DELETE' })
+                .then(res => fetchCustomers())
+                .catch(err => console.error(err))
+            setMessage('Customer deleted!');
+            handleClickOpen();
+        }
+    }
+
+    const editCustomer = (customer, link) => {
+        fetch(link, {
+            method: 'PUT',
+            body: JSON.stringify(customer),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => fetchCustomers())
+            .catch(err => console.error(err))
+    }
+
+    const addTraining = (training) => {
+        fetch('https://customerrest.herokuapp.com/api/trainings', {
+            method: 'POST',
+            body: JSON.stringify(training),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => {
+                setMessage('Training added!')
+                setOpen(true);
+            })
+            .catch(err => console.error(err))
+    }
+
     const sizeToFit = () => {
         gridOptions.api.sizeColumnsToFit();
     }
 
     const columns = [
+        {
+            headerName: '',
+            width: '70',
+            valueGetter: (params) => params.data.links[0].href,
+            cellRenderer: params => <EditCustomer customer={params.data} url={params.value} editCustomer={editCustomer} />
+        },
+        {
+            headerName: '',
+            field: 'link',
+            width: '70',
+            valueGetter: (params) => params.data.links[0].href,
+            cellRenderer: params => <IconButton size='small' onClick={() => deleteCustomer(params.value)}><DeleteSharp /></IconButton>
+        },
+        {
+            headerName: '',
+            width: '70',
+            valueGetter: (params) => params.data.links[0].href,
+            cellRenderer: params => <AddTraining addTraining={addTraining} url={params.value} customer={params.data} />
+        },
         {
             headerName: 'First name',
             field: 'firstname',
@@ -74,6 +160,7 @@ export default function Customerlist() {
 
     return (
         <div>
+            <AddCustomer addCustomer={addCustomer} />
             <div
                 className='ag-theme-material'
                 style={{
@@ -87,6 +174,13 @@ export default function Customerlist() {
                     gridOptions={gridOptions}
                 />
             </div>
+            <Snackbar
+                open={open}
+                autoHideDuration={5000}
+                onClose={handleClose}
+                message={message}
+                action={deleteCustomer}
+            />
         </div>
     );
 }

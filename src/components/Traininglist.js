@@ -4,18 +4,41 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
 import moment from 'moment';
 import 'moment-timezone';
+import { IconButton, Snackbar } from '@mui/material';
+import { DeleteSharp } from '@mui/icons-material';
 
 export default function Traininglist() {
 
+    const [open, setOpen] = useState(false);
     const [trainings, setTrainings] = useState([]);
 
     useEffect(() => fetchTrainings(), []);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    }
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    }
 
     const fetchTrainings = () => {
         fetch('https://customerrest.herokuapp.com/gettrainings')
             .then(response => response.json())
             .then(data => setTrainings(data))
             .catch(err => console.error(err))
+    }
+
+    const deleteTraining = (id) => {
+        if (window.confirm('Are you sure you want to delete this training?')) {
+            fetch('https://customerrest.herokuapp.com/api/trainings/' + id, { method: 'DELETE' })
+                .then(res => fetchTrainings())
+                .catch(err => console.error(err))
+            handleClickOpen();
+        }
     }
 
     const dateFormatter = (params) => {
@@ -31,6 +54,12 @@ export default function Traininglist() {
     }
 
     const columns = [
+        {
+            headerName: '',
+            field: 'id',
+            width: '70',
+            cellRenderer: params => <IconButton onClick={() => deleteTraining(params.value)}><DeleteSharp /></IconButton>
+        },
         {
             headerName: 'Date',
             field: 'date',
@@ -84,6 +113,13 @@ export default function Traininglist() {
                     gridOptions={gridOptions}
                 />
             </div>
+            <Snackbar
+                open={open}
+                autoHideDuration={5000}
+                onclose={handleClose}
+                message='Training deleted!'
+                action={deleteTraining}
+            />
         </div>
     );
 }
