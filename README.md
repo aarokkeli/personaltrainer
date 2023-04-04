@@ -1,6 +1,6 @@
 # <p align="center">Personal trainer</p>
 
-<p align="center">Training project for front end -programmming course</p>
+<p align="center">Training project for front end programmming -course</p>
 
 ## SETUP
 
